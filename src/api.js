@@ -20,7 +20,8 @@ const parseNextLinkSinceParam = linkHeader => {
   const links = linkHeader.split(",").reduce((acc, link) => {
     const [url, relString] = link.split(";");
     const [_, rel] = relString.match(/rel="(.*)"/);
-    return { ...acc, [rel]: url.trim().slice(1, nextLink.length - 1) };
+    const trimmedUrl = url.trim();
+    return { ...acc, [rel]: trimmedUrl.slice(1, trimmedUrl.length - 1) };
   }, {});
 
   const nextLink = links["next"];
