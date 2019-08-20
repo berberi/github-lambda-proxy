@@ -1,0 +1,11 @@
+{
+  "lambda": {
+    "role": "github-lambda-proxy-executor",
+    "name": "github-lambda-proxy",
+    "region": "us-east-2"
+  },
+  "api": {
+    "id": "02p9fa6dl3",
+    "module": "bin/api"
+  }
+}
