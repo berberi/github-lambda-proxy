@@ -7,7 +7,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "transpile": "babel src --out-dir bin",
+    "transpile": "babel src --out-dir bin --presets=@babel/preset-env",
     "create": "npm run transpile && claudia create --region us-east-2 --api-module bin/api",
     "update": "npm run transpile && claudia update"
   },
@@ -17,8 +17,9 @@
     "claudia-api-builder": "^4.1.2"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
     "claudia": "^5.7.0"
   }
 }
