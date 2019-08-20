@@ -8,35 +8,34 @@ const encrypted_token = process.env["GITHUB_TOKEN"];
 
 const decrypt = encrypted =>
   new Promise((resolve, reject) => {
-    new AWS.KMS().decrypt(
+    const kms = new AWS.KMS();
+    kms.decrypt(
       { CiphertextBlob: Buffer.from(encrypted, "base64") },
       (err, data) =>
         err ? reject(err) : resolve(data.Plaintext.toString("ascii"))
     );
   });
 
-const api = new API();
-
-let githubClient;
-
 const parseNextLinkSinceParam = linkHeader => {
   const links = linkHeader.split(",").reduce((acc, link) => {
     const [url, relString] = link.split(";");
     const [_, rel] = relString.match(/rel="(.*)"/);
-    return { ...acc, [rel]: url.trim() };
+    return { ...acc, [rel]: url.trim().slice(1, nextLink.length - 1) };
   }, {});
 
   const nextLink = links["next"];
 
   if (!nextLink) return null;
 
-  const url = new URL(nextLink.trim().slice(1, nextLink.length - 1));
+  const url = new URL(nextLink);
   const params = new URLSearchParams(url.search);
   const since = params.get("since");
 
   return parseInt(since, 10);
 };
 
+let githubClient;
+const api = new API();
 api.get("/repos", async ({ queryString: { since } = {} }) => {
   if (!githubClient) {
     const decrypted_token = await decrypt(encrypted_token);
