@@ -9,15 +9,9 @@ const encrypted_token = process.env["GITHUB_TOKEN"];
 const decrypt = encrypted =>
   new Promise((resolve, reject) => {
     new AWS.KMS().decrypt(
-      { CiphertextBlob: new Buffer(encrypted, "base64") },
-      (err, data) => {
-        if (err) {
-          console.log("Decrypt error:", err);
-          return reject(err);
-        }
-
-        return resolve(data.Plaintext.toString("ascii"));
-      }
+      { CiphertextBlob: Buffer.from(encrypted, "base64") },
+      (err, data) =>
+        err ? reject(err) : resolve(data.Plaintext.toString("ascii"))
     );
   });
 
@@ -60,9 +54,14 @@ api.get("/repos", async ({ queryString: { since } = {} }) => {
     options.since = since;
   }
 
-  const fullResponse = await githubClient.repos.listPublic(options);
-  const { data, headers: { link } = {} } = fullResponse;
-  return { data, next: parseNextLinkSinceParam(link), fullResponse };
+  const { data, headers: { link } = {} } = await githubClient.repos.listPublic(
+    options
+  );
+
+  return JSON.stringify({
+    data,
+    next: parseNextLinkSinceParam(link)
+  });
 });
 
 module.exports = api;
